@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+        function submitForm() {
+            let form = document.getElementById("form");
+            let data = new FormData(form);
+            $.ajax({
+                type:"POST",
+                enctype: 'multipart/form-data',
+                url: "http://localhost:8086/api/houses/upload",
+                data: data,
+                processData: false,
+                contentType: false,
+                cache:false,
+                timeout:1000000,
+                success: function (data) {
+                    document.getElementById('main').innerHTML = `${data.name}, ${data.address}, ${data.bedroom}, ${data.bathroom}, ${data.price}, <img src = "image/${data.image}">`
+                }
+            })
+        }
+
+    </script>
+
+
+</head>
+<body>
+<h1>Danh sách phòng</h1>
+<button onclick="findAllHouse()">Hiện dữ liệu phòng</button>
+
+<!--<button onclick="showAddForm()">Thêm phòng mới </button>-->
+
+<div id="display">
+
+</div>
+
+
+<script>
+    let show = document.getElementById("display")
+    function findAllHouse() {
+        let str = ""
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8086/api/houses",
+            success: function (data) {
+                console.log(data)
+                for (let i=0; i<data.length; i++) {
+                    str += `<h1> ${data[i].name} ,  ${data[i].address} ,  ${data[i].bedroom},  ${data[i].bathroom},  ${data[i].price}, ${data[i].image}
+                        <button onclick="showEditForm(${data[i].id})">Sửa</button>
+                        <button onclick="showDeleteForm(${data[i].id})">Xóa</button>`
+                }
+                show.innerHTML = str;
+                // dislpay(data)
+            }, error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    // function showAddForm() {
+    //     let str = ""
+    //     $.ajax({
+    //         type: "GET",
+    //         url: "http://localhost:8085/api/categorys",
+    //         success: function (cate) {
+    //             console.log(cate)
+    //             str = "  <input type=\"text\" id=\"name\">\n" +
+    //                 "    <input type=\"number\" id=\"address\">\n" +
+    //                 "    <input type=\"number\" id=\"bedroom\">\n" +
+    //                 "    <input type=\"number\" id=\"bathroom\">\n" +
+    //                 "    <input type=\"number\" id=\"price\">\n" +
+    //                 "    <input type=\"number\" id=\"bathroom\">\n" +
+    //
+    //
+    //                 "    <button onclick=\"save()\">Thêm</button>"
+    //             show.innerHTML = str;
+    //         }, error: function (error) {
+    //             console.log(error);
+    //         }
+    //     });
+    // }
+
+
+</script>
+
+<div id="main">
+
+</div>
+
+<form enctype="multipart/form-data" id="form">
+
+    <input type="text" name="name">
+    <input type="text" name="address">
+    <input type="text" name="bedroom">
+    <input type="text" name="bathroom">
+    <input type="text" name="price">
+    <input type="file" name="file">
+    <button type="button" onclick="submitForm()">Upload</button>
+
+</form>
+
+
+</body>
+</html>
