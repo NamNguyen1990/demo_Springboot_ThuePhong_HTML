@@ -91,6 +91,7 @@
                 <tbody id="list">
                 </tbody>
             </table>
+            <div id="pagable"></div>
         </div>
     </div>
 </div>
@@ -238,14 +239,26 @@
 
 
 
-
-    findAll();
-    function findAll() {
+    findAll(0);
+    function findAll(number) {
+        let pagable = document.getElementById("pagable")
         $.ajax({
             type: "GET",
-            url: "http://localhost:8086/api/houses",
+            url: "http://localhost:8086/api/houses?page="+number,
             success: function (data) {
-                dislpay(data);
+                console.log(data)
+                dislpay(data.content);
+                let str = ""
+                let num = data.pageable.pageNumber
+                console.log(num)
+                if(num > 0 || num+1 === data.totalPages) {
+                    str += `<button onclick="findAll(${num-1})">Truoc</button>`
+                }
+                str += `${num+1}/${data.totalPages}`
+                if(num <= 0 || num+1 !== data.totalPages) {
+                    str += `<button onclick="findAll(${num+1})">Sau</button>`
+                }
+                pagable.innerHTML = str
             }
         });
     }
@@ -265,7 +278,7 @@
                                 <td>${data[i].bedroom}</td>
                                 <td>${data[i].bathroom}</td>
                                 <td>${data[i].price}</td>
-                                <td><img src = "image/${data[i].image}"></td>
+                                <td><img src = "image/${data[i].image}" width="100px"></td>
                                 <td><button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1" onclick="showEditForm(${data[i].id})">Edit</button></td>
                                 <td><button class="btn btn-primary" onclick="showDeleteForm1(${data[i].id})">Delete</button></td>
                             </tr>`
